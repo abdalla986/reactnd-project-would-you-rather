@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component, Fragment } from 'react'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { handleInitialData } from './actions/shared'
+import { connect } from 'react-redux'
+import Login from './components/Login'
+import Dashboard from './components/Dashboard'
+import QuestionResults from './components/QuestionResults'
+import Nav from './components/Nav'
+import Leaderboard from './components/Leaderboard'
+import './App.css'
+import NewQuestion from './components/NewQuestion'
+import NotFound from './components/NotFound'
+import ProtectedRoute from './components/ProtectedRoute'
+import { LoadingBar } from 'react-redux-loading'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+class App extends Component {
+  
+  componentDidMount() {
+    this.props.dispatch(handleInitialData())
+  }
+
+	render() {
+		return (
+			<Router>
+				<Fragment>
+					<div className='container'>
+            <LoadingBar />
+						<Nav />
+							<div className="main-content"> 
+								<Switch>
+									<Route path="/" exact component={Login}/>
+									<ProtectedRoute path='/dashboard' exact component={Dashboard} />
+									<ProtectedRoute path='/add' exact component={NewQuestion} />
+									<ProtectedRoute path='/question/:id' component={QuestionResults} />
+									<ProtectedRoute path='/leaderboard' component={Leaderboard} />
+									<Route path="/not-found" component={NotFound} />
+								</Switch>
+							</div>
+					</div>
+				</Fragment>
+			</Router>
+		)
+	}
 }
 
-export default App;
+
+export default connect()(App)
